@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>T-Level Digital Core 2 Mastery Hub</title>
+    <style>
+        :root {
+            --bg-color: #f8fafc;
+            --text-color: #0f172a;
+            --primary-dark: #1e293b;
+            --accent-blue: #0284c7;
+            --card-front: #ffffff;
+            --card-back: #f0f9ff;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+            --topic-business: #e11d48;
+            --topic-data: #2563eb;
+            --topic-env: #059669;
+            --topic-security: #d97706;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            max-width: 800px;
+        }
+
+        h1 {
+            color: var(--primary-dark);
+            margin-bottom: 10px;
+            font-size: 2.5rem;
+        }
+
+        .subtitle {
+            color: #64748b;
+            font-size: 1.1rem;
+            margin-top: 0;
+        }
+
+        nav {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .nav-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            background-color: #ffffff;
+            color: var(--primary-dark);
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: var(--shadow);
+            transition: all 0.2s ease;
+        }
+
+        .nav-btn:hover {
+            transform: translateY(-2px);
+            opacity: 0.9;
+        }
+
+        .nav-btn.active {
+            background-color: var(--accent-blue);
+            color: white;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+            width: 100%;
+            max-width: 1200px;
+            padding: 10px;
+        }
+
+        .flashcard {
+            background-color: transparent;
+            height: 240px;
+            perspective: 1000px;
+            cursor: pointer;
+        }
+
+        .card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+            box-shadow: var(--shadow);
+            border-radius: 12px;
+        }
+
+        .flashcard:hover .card-inner {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-inner.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .card-front, .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            border-radius: 12px;
+            padding: 24px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-front {
+            background-color: var(--card-front);
+            color: var(--text-color);
+            border-top: 6px solid var(--accent-blue);
+        }
+
+        .card-back {
+            background-color: var(--card-back);
+            color: var(--text-color);
+            transform: rotateY(180deg);
+            border-top: 6px solid #94a3b8;
+            overflow-y: auto;
+        }
+
+        .category-tag {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            padding: 4px 10px;
+            border-radius: 20px;
+            color: white;
+        }
+
+        .tag-business { background-color: var(--topic-business); }
+        .tag-data { background-color: var(--topic-data); }
+        .tag-env { background-color: var(--topic-env); }
+        .tag-security { background-color: var(--topic-security); }
+
+        .card-question {
+            font-size: 1.15rem;
+            font-weight: 600;
+            color: var(--primary-dark);
+            line-height: 1.5;
+            margin: auto 0;
+        }
+
+        .card-answer {
+            font-size: 1rem;
+            line-height: 1.6;
+            color: #334155;
+            margin: auto 0;
+            text-align: left;
+            width: 100%;
+        }
+
+        .hint-text {
+            font-size: 0.75rem;
+            color: #94a3b8;
+            font-weight: 500;
+        }
+
+        .citation {
+            font-size: 0.7rem;
+            color: #64748b;
+            display: block;
+            margin-top: 8px;
+            font-style: italic;
+        }
+
+        @media (max-width: 640px) {
+            .grid-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>T-Level Digital Core 2 Mastery Hub</h1>
+        <p class="subtitle">Interactive Exam Revision Flashcards based on the Official Technical Specifications</p>
+    </header>
+
+    <nav>
+        <button class="nav-btn active" onclick="filterTopic('all')">All Topics (64)</button>
+        <button class="nav-btn" onclick="filterTopic('business')">Business Context (16)</button>
+        <button class="nav-btn" onclick="filterTopic('data')">Data (16)</button>
+        <button class="nav-btn" onclick="filterTopic('env')">Digital Environments (16)</button>
+        <button class="nav-btn" onclick="filterTopic('security')">Security (16)</button>
+    </nav>
+
+    <div class="grid-container" id="grid"></div>
+
+    <script>
+        const flashcardsData = [
+            // ==================== BUSINESS CONTEXT ====================
+            {
+                id: 1,
+                topic: 'business',
+                category: 'Business Context',
+                tagClass: 'tag-business',
+                question: "What does 'scaling up' mean in a business IT infrastructure context?",
+                answer: "Deploying additional servers or adding more hard drives to existing infrastructure configurations to successfully handle growing workload demand.",
+                citation: "[Source: Digital Production, Design & Development Core Textbook]"
+            },
+            {
+                id: 2,
+                topic: 'business',
+                category: 'Business Context',
+                tagClass: 'tag-business',
+                question: "What challenges are faced when an organization needs to 'scale down' its IT resources?",
+                answer: "Assessing what resources are no longer required, planning the repurposing or disposal of redundant hardware/software, and securely decommissioning or moving data under strict cost and time guidelines.",
+                citation: "[Source: Digital Production, Design & Development Core Textbook]"
+            },
+            {
+                id: 3,
+                topic: 'business',
+                category: 'Business Context',
+                tagClass: 'tag-business',
+                question: "How does a general lack of technical knowledge by end users impact IT professionals in a business?",
+                answer: "It consumes critical operational resources because specialized IT professionals must spend valuable time explaining basic IT functions rather than focusing on strategic developments.",
+                citation: "[Source: Digital Production, Design & Development Core Textbook]"
+            },
+            {
+                id: 4,
+                topic: 'business',
+                category: 'Business Context',
+                tagClass: 'tag-business',
+                question: "How should a business adapt its digital solutions for end users with lower educational or literacy levels?",
+                answer: "By simplifying UI flows, incorporating clear, unambiguous terminology, and heavily utilizing intuitive graphics or video presentations instead of heavy blocks of text.",
+                citation: "[Source: Digital Production, Design & Development Core Textbook]"
+            },
+            {
+                id: 5,
+                topic: 'business',
+                category: 'Business Context',
+                tagClass: 'tag-business',
+                question: "What is the key distinction between an internal and an external audience for a business system?",
+                answer: "Internal audiences consist of employees using systems to support core operational functions (like warehouse stock tracking), while external audiences are customers purchasing or browsing via front-facing services.",
+                citation: "[Source: Digital Production, Design & Development Core Textbook]"
+            },
+            {
+                id: 6,
+                topic: 'business',
+                category: 'Business Context',
+                tagClass: 'tag-business',
+                question: "Why do organizations construct user 'personas' during digital technology research?",
+                answer: "Personas help an organization recognize, understand, and design specifically for the diverse needs, behaviors, and expectations of different real-world target users.",
+                citation: "[Source: Digital Production, Design & Development Core Textbook]"
+            },
+            {
+                id: 7,
+                topic: 'business',
+                category: 'Business Context',
+                tagClass: 'tag-business',
+                question: "What are three key organizational traits that achieve high success during digital transformation?",
+                answer: "A willingness to take calculated strategic risks, operational agility to act quickly as a market trendsetter, and building a strong shared digital culture across departments.",
+                citation: "[Source: Digital Production, Design & Development Core Textbook]"
+            },
+            {
+                id: 8,
+                topic: 'business',
+                category: 'Business Context',
+                tagClass: 'tag-business',
+                question: "What workforce factor represents a major bottleneck when implementing digital transformations?",
+                answer: "Professional IT specialists are in exceptionally high demand but very low supply, which frequently delays an organization's deployment timelines.",
+                citation: "[Source: Digital Production, Design & Development Core Textbook]"
+            },
+            {
+                id: 9,
+                topic: 'business',
+                category: 'Business Context',
+                tagClass: 'tag-business',
+                question: "What is a primary economic and human benefit of using technology to automate dangerous business tasks?",
+                answer: "It protects employee health and minimizes long-term high-wage costs typically paid for high-risk roles, which over time balances out the expensive initial procurement cost of the technology.",
+                citation: "[Source: Digital Production, Design & Development Core Textbook]"
+            },
+            {
+                id: 10,
+                topic: 'business',
+                category: 'Business Context',
+                tagClass: 'tag-business',
+                question: "What is a primary social drawback of relying heavily on digital communication channels within a workforce?",
+                answer: "It often reduces interpersonal working relationships and limits direct human connection within the workspace since interactions move primarily behind screens.",
+                citation: "[Source: Digital Production, Design & Development Core Textbook]"
+            },
+            {
+                id: 11,
+                topic: 'business',
+                category: 'Business Context',
+                tagClass: 'tag-business',
+                question: "What five factors determine the overall feasibility of an upcoming digital project?",
+                answer: "1. Financial savings.<br>2. Costs of implementing change.<br>3. Impact on processes (productivity/security).<br>4. Provision of new products.<br>5. Potential impact on corporate reputation.",
+                citation: "[Source: Digital Production, Design & Development Core Textbook]"
+            },
+            {
+                id: 12,
+                topic: 'business',
+                category: 'Business Context',
+                tagClass: 'tag-business',
+                question: "What are three key risks linked to workforce adaptation during system rollouts?",
+                answer: "Active resistance to change from the workforce, human misuse of new digital infrastructure, and inadequate training or support structures during deployment.",
+                citation: "[Source: Digital Production, Design & Development Core Textbook]"
+            },
+            {
+                id: 13,
+                topic: 'business',
+                category: 'Business Context',
+                tagClass: 'tag-business',
+                question: "What are the three core structural constraints that limit a digital project?",
+                answer: "Budget ceilings, strict project timelines, and available human or technological resource caps.",
+                citation: "[Source: Digital Production, Design & Development Core Textbook]"
+            },
+            {
+                id: 14,
+                topic: 'business',
+                category: 'Business Context',
+                tagClass: 'tag-business',
+                question: "What core questions guide the software development lifecycle under User-Centred Design (UCD)?",
+                answer: "Who is the user? What do they want to achieve? How, when, and why do they interact with the product? What is the ultimate user experience?",
+                citation: "[Source: Digital Software Development Technical Specification]"
+            },
+            {
+                id: 15,
+                topic: 'business',
+                category: 'Business Context',
+                tagClass: 'tag-business',
+                question: "What are the three core defining characteristics of a User-Centred Design approach?",
+                answer: "It is inherently empathetic, continuously iterative, and thoroughly interdisciplinary.",
+                citation: "[Source: Digital Software Development Technical Specification]"
+            },
+            {
+                id: 16,
+                topic: 'business',
+                category: 'Business Context',
+                tagClass: 'tag-business',
+                question: "How does business-driven development affect technical software maintenance over time?",
+                answer: "It focuses technical teams on executing proactive maintenance to prevent foreseeable disruptions, such as aligning with updating regulatory rules or keeping pace with new device compatibility.",
+                citation: "[Source: Digital Software Development Technical Specification]"
+            },
+
+            // ==================== DATA ====================
+            {
+                id: 17,
+                topic: 'data',
+                category: 'Data',
+                tagClass: 'tag-data',
+                question: "What is the fundamental structural difference between data and information?",
+                answer: "Data consists of unorganized, raw facts and figures, whereas information represents data that has been structured, processed, and analyzed into a meaningful context.",
+                citation: "[Source: Digital Production, Design & Development Core Textbook]"
+            },
+            {
+                id: 18,
+                topic: 'data',
+                category: 'Data',
+                tagClass: 'tag-data',
+                question: "What are the components of the DIKW pyramid, moving from base to apex?",
+                answer: "Data (base), Information, Knowledge, and Wisdom (apex).",
+                citation: "[Source: Digital Production, Design & Development Core Textbook]"
+            },
+            {
+                id: 19,
+                topic: 'data',
+                category: 'Data',
+                tagClass: 'tag-data',
+                question: "Name three specific purposes for which modern organizations utilize data and information.",
+                answer: "Analyzing market trends to identify actionable patterns, monitoring internal user behavior, running targeted marketing campaigns, and performing strategic threat/opportunity assessments.",
+                citation: "[Source: Digital Production, Design & Development Core Textbook]"
+            },
+            {
+                id: 20,
+                topic: 'data',
+                category: 'Data',
+                tagClass: 'tag-data',
+                question: "What is the definition and goal of a 'Smart City'?",
+                answer: "An urban area that deploys integrated IoT systems and digital hardware to collect continuous data, allowing leaders to make highly informed operational decisions and optimize public quality of life.",
+                citation: "[Source: Digital Production, Design & Development Core Textbook]"
+            },
+            {
+                id: 21,
+                topic: 'data',
+                category: 'Data',
+                tagClass: 'tag-data',
+                question: "What is structural metadata, and what is a common example within database systems?",
+                answer: "Structural metadata provides core technical descriptions and structural rules for files. A primary example is a database data dictionary.",
+                citation: "[Source: Digital Production, Design & Development Core Textbook]"
+            },
+            {
+                id: 22,
+                topic: 'data',
+                category: 'Data',
+                tagClass: 'tag-data',
+                question: "What are data permissions (privileges) and why are they implemented?",
+                answer: "They are system authorization profiles that limit exactly what operations a user can execute on data assets, protecting files from unauthorized viewing, editing, or accidental destruction.",
+                citation: "[Source: Digital Production, Design & Development Core Textbook]"
+            },
+            {
+                id: 23,
+                topic: 'data',
+                category: 'Data',
+                tagClass: 'tag-data',
+                question: "How do structured and unstructured data differ within data taxonomy?",
+                answer: "Structured data is quantitative, highly organized, and easily mapped to fixed fields (e.g., discrete values). Unstructured data is qualitative, lacks a rigid pre-defined model, and is typically stored as a single object.",
+                citation: "[Source: Digital Software Development Technical Specification]"
+            },
+            {
+                id: 24,
+                topic: 'data',
+                category: 'Data',
+                tagClass: 'tag-data',
+                question: "What is a BLOB data type and when is it utilized?",
+                answer: "Binary Large Object. It is used to hold massive blocks of unstructured binary data within databases, such as images, audio recordings, or video clips.",
+                citation: "[Source: Digital Software Development Technical Specification]"
+            },
+            {
+                id: 25,
+                topic: 'data',
+                category: 'Data',
+                tagClass: 'tag-data',
+                question: "List four common data interchange or presentation formats specified for digital software projects.",
+                answer: "JSON, XML, CSV, and plain text files (alongside character encodings like ASCII and UTF-8).",
+                citation: "[Source: Digital Software Development Technical Specification]"
+            },
+            {
+                id: 26,
+                topic: 'data',
+                category: 'Data',
+                tagClass: 'tag-data',
+                question: "What are the Six Vs (dimensions) that characterize Big Data environments?",
+                answer: "Volume, Variety, Variability, Velocity, Veracity, and Value.",
+                citation: "[Source: Digital Software Development Technical Specification]"
+            },
+            {
+                id: 27,
+                topic: 'data',
+                category: 'Data',
+                tagClass: 'tag-data',
+                question: "What are four core data quality assurance methods utilized to maintain system data health?",
+                answer: "Validation, verification, consistency checking, and integrity enforcement (alongside managing redundancy).",
+                citation: "[Source: Digital Software Development Technical Specification]"
+            },
+            {
+                id: 28,
+                topic: 'data',
+                category: 'Data',
+                tagClass: 'tag-data',
+                question: "What is data wrangling and what are its five linear processing steps?",
+                answer: "The technical process of reformatting and cleaning raw data streams. Its five core steps are: 1. Structure, 2. Clean, 3. Validate, 4. Enrich, and 5. Output.",
+                citation: "[Source: Digital Software Development Technical Specification]"
+            },
+            {
+                id: 29,
+                topic: 'data',
+                category: 'Data',
+                tagClass: 'tag-data',
+                question: "Explain the difference between transcription errors and transposition errors during manual data input.",
+                answer: "A transcription error is a straightforward typing typo (e.g. entering a wrong character), whereas a transposition error occurs when two adjacent numbers or letters are accidentally swapped around (e.g. 45 instead of 54).",
+                citation: "[Source: Digital Software Development Technical Specification]"
+            },
+            {
+                id: 30,
+                topic: 'data',
+                category: 'Data',
+                tagClass: 'tag-data',
+                question: "Name three user interface design features that explicitly reduce human data entry errors.",
+                answer: "Automated input validation, double-entry verification checks, and implementing pre-filled boxes or drop-down selection menus.",
+                citation: "[Source: Digital Software Development Technical Specification]"
+            },
+            {
+                id: 31,
+                topic: 'data',
+                category: 'Data',
+                tagClass: 'tag-data',
+                question: "What are the three main data models used to structure and represent organizational records?",
+                answer: "Hierarchical data models, network data models, and relational data models.",
+                citation: "[Source: Digital Software Development Technical Specification]"
+            },
+            {
+                id: 32,
+                topic: 'data',
+                category: 'Data',
+                tagClass: 'tag-data',
+                question: "What are the primary access mechanisms used to control cross-platform data interactions?",
+                answer: "Role-Based Access Control (RBAC), Rule-Based Access Control (RuBAC), and Application Programming Interfaces (APIs).",
+                citation: "[Source: Digital Software Development Technical Specification]"
+            },
+
+            // ==================== DIGITAL ENVIRONMENTS ====================
+            {
+                id: 33,
+                topic: 'env',
+                category: 'Digital Environments',
+                tagClass: 'tag-env',
+                question: "What is corporate digital resilience?",
+                answer: "An organization's strategic capability to manage risk, absorb technical disruptions, actively learn from incidents, and continue delivering core services with minimal operational impact.",
+                citation: "[Source: Digital Production, Design & Development Core Textbook]"
+            },
+            {
+                id: 34,
+                topic: 'env',
+                category: 'Digital Environments',
+                tagClass: 'tag-env',
+                question: "What is an incremental backup scheme?",
+                answer: "Following an initial full backup, an incremental backup saves only the specific data files and folders that have undergone modifications since the last backup of any type.",
+                citation: "[Source: Digital Production, Design & Development Core Textbook]"
+            },
+            {
+                id: 35,
+                topic: 'env',
+                category: 'Digital Environments',
+                tagClass: 'tag-env',
+                question: "Why does an incremental backup structure impose a longer recovery time during system restores?",
+                answer: "Because the restoration software must process and reconstruct chronological files across a chain of multiple separate, sequential backup captures.",
+                citation: "[Source: Digital Production, Design & Development Core Textbook]"
+            },
+            {
+                id: 36,
+                topic: 'env',
+                category: 'Digital Environments',
+                tagClass: 'tag-env',
+                question: "What is a differential backup scheme?",
+                answer: "A strategy where a full backup is executed first, and subsequent sessions capture all datasets that have changed since that last full backup, avoiding sequential tracking chains.",
+                citation: "[Source: Digital Production, Design & Development Core Textbook]"
+            },
+            {
+                id: 37,
+                topic: 'env',
+                category: 'Digital Environments',
+                tagClass: 'tag-env',
+                question: "What target platform characteristics must software developers analyze before compiling an application?",
+                answer: "The deployment operating system, file system formats, hosting infrastructure properties (physical vs virtualized), and the underlying programming language runtime stack.",
+                citation: "[Source: Digital Software Development Technical Specification]"
+            },
+            {
+                id: 38,
+                topic: 'env',
+                category: 'Digital Environments',
+                tagClass: 'tag-env',
+                question: "What is the primary operational mission of the Internet Engineering Task Force (IETF)?",
+                answer: "To optimize internet performance by publishing high-quality, stable technical documents that govern how engineers design, deploy, and manage internet architecture.",
+                citation: "[Source: Digital Production, Design & Development Core Textbook]"
+            },
+            {
+                id: 39,
+                topic: 'env',
+                category: 'Digital Environments',
+                tagClass: 'tag-env',
+                question: "What are the five guiding pillars or principles of the IETF?",
+                answer: "1. Open process.<br>2. Protocol ownership.<br>3. Rough consensus and running code.<br>4. Technical competence.<br>5. Volunteer core.",
+                citation: "[Source: Digital Production, Design & Development Core Textbook]"
+            },
+            {
+                id: 40,
+                topic: 'env',
+                category: 'Digital Environments',
+                tagClass: 'tag-env',
+                question: "What is an RFC within network architecture?",
+                answer: "Request for Comments. A permanent archival publication of technical notes regarding internet standards and protocols which never alters once logged.",
+                citation: "[Source: Digital Production, Design & Development Core Textbook]"
+            },
+            {
+                id: 41,
+                topic: 'env',
+                category: 'Digital Environments',
+                tagClass: 'tag-env',
+                question: "Into what two categories does the IETF separate document library publication mistakes?",
+                answer: "Technical errors (flaws inside the functional technical descriptions) and editorial errors (spelling, syntax, or formatting issues that do not break technical meaning).",
+                citation: "[Source: Digital Production, Design & Development Core Textbook]"
+            },
+            {
+                id: 42,
+                topic: 'env',
+                category: 'Digital Environments',
+                tagClass: 'tag-env',
+                question: "What are the four foundational design principles of WCAG 2.1?",
+                answer: "The POUR principles: Perceivable, Operable, Understandable, and Robust.",
+                citation: "[Source: Digital Production, Design & Development Core Textbook]"
+            },
+            {
+                id: 43,
+                topic: 'env',
+                category: 'Digital Environments',
+                tagClass: 'tag-env',
+                question: "What is a network backbone cable?",
+                answer: "A central high-capacity transmission line designed to carry primary data traffic streams between separated sub-networks or core structural hubs.",
+                citation: "[Source: Digital Production, Design & Development Core Textbook]"
+            },
+            {
+                id: 44,
+                topic: 'env',
+                category: 'Digital Environments',
+                tagClass: 'tag-env',
+                question: "Differentiate between file-based and directory-based data storage structures.",
+                answer: "File-based structures treat files as flat standalone entities containing distinct streams, while directory-based formats structure files within nested logical grouping folders.",
+                citation: "[Source: Digital Software Development Technical Specification]"
+            },
+            {
+                id: 45,
+                topic: 'env',
+                category: 'Digital Environments',
+                tagClass: 'tag-env',
+                question: "What defines a hierarchy-based storage structure?",
+                answer: "An architecture that maps files and records into a cascading, down-branching structural tree originating from a singular master root directory.",
+                citation: "[Source: Digital Software Development Technical Specification]"
+            },
+            {
+                id: 46,
+                topic: 'env',
+                category: 'Digital Environments',
+                tagClass: 'tag-env',
+                question: "Name three front-end interface layout options critical for optimizing platform visual presentation.",
+                answer: "The structural use of layout grids, the intentional distribution of white space, and careful typography/font typesetting adjustments.",
+                citation: "[Source: Digital Software Development Technical Specification]"
+            },
+            {
+                id: 47,
+                topic: 'env',
+                category: 'Digital Environments',
+                tagClass: 'tag-env',
+                question: "Why must external bandwidth limits be verified during system interface design?",
+                answer: "To guarantee that media assets, layouts, and data loads do not overwhelm client connection speeds, preserving interface fluidity for restricted-bandwidth users.",
+                citation: "[Source: Digital Software Development Technical Specification]"
+            },
+            {
+                id: 48,
+                topic: 'env',
+                category: 'Digital Environments',
+                tagClass: 'tag-env',
+                question: "What is the primary mechanical job of a language assembler?",
+                answer: "To translate low-level assembly source code instructions directly into binary machine language patterns natively readable by computing processor components.",
+                citation: "[Source: Digital Production, Design & Development Core Textbook]"
+            },
+
+            // ==================== SECURITY ====================
+            {
+                id: 49,
+                topic: 'security',
+                category: 'Security',
+                tagClass: 'tag-security',
+                question: "What is an Acceptable Use Policy (AUP)?",
+                answer: "A formal regulatory agreement binding employers and employees that explicit sets forth specific permissions, boundaries, and rules for accessing internal network tools, emails, and internet access.",
+                citation: "[Source: Digital Production, Design & Development Core Textbook]"
+            },
+            {
+                id: 50,
+                topic: 'security',
+                category: 'Security',
+                tagClass: 'tag-security',
+                question: "How does an active AUP defend an enterprise entity legally?",
+                answer: "It legally dissociates the business from liabilities if staff perform illegal or nuisance actions via corporate assets, providing verified documentation for disciplinary steps or termination.",
+                citation: "[Source: Digital Production, Design & Development Core Textbook]"
+            },
+            {
+                id: 51,
+                topic: 'security',
+                category: 'Security',
+                tagClass: 'tag-security',
+                question: "How do security access badges enforce technical space controls?",
+                answer: "Each plastic badge maintains a unique embedded authentication token matched to an employee profile, allowing proximity readers to confirm localized zone rights.",
+                citation: "[Source: Digital Production, Design & Development Core Textbook]"
+            },
+            {
+                id: 52,
+                topic: 'security',
+                category: 'Security',
+                tagClass: 'tag-security',
+                question: "What occurs during a Man-in-the-Middle (MITM) network exploit?",
+                answer: "An attacker intercepts communications between two legitimate nodes undetected, granting the ability to harvest private account credentials or financial transactions.",
+                citation: "[Source: Digital Production, Design & Development Core Textbook]"
+            },
+            {
+                id: 53,
+                topic: 'security',
+                category: 'Security',
+                tagClass: 'tag-security',
+                question: "What is the definition of the Dark Net?",
+                answer: "An isolated subset of overlay network systems that traditional search engine web crawlers cannot index, requiring special client authorization or specific tools to enter.",
+                citation: "[Source: Digital Production, Design & Development Core Textbook]"
+            },
+            {
+                id: 54,
+                topic: 'security',
+                category: 'Security',
+                tagClass: 'tag-security',
+                question: "What is a hacker according to digital security standards?",
+                answer: "An individual who leverages computers and programming techniques to gain unauthorized, forced entry into data stores or systems.",
+                citation: "[Source: Digital Production, Design & Development Core Textbook]"
+            },
+            {
+                id: 55,
+                topic: 'security',
+                category: 'Security',
+                tagClass: 'tag-security',
+                question: "What is vulnerability testing (penetration testing)?",
+                answer: "An active security assessment that stages simulated network attacks against a live configuration to map and remediate exposures before malicious exploitation occurs.",
+                citation: "[Source: Digital Production, Design & Development Core Textbook]"
+            },
+            {
+                id: 56,
+                topic: 'security',
+                category: 'Security',
+                tagClass: 'tag-security',
+                question: "What element represents the single biggest point of physical vulnerability in a system?",
+                answer: "The actual human users of the system, whose behaviors or configuration missteps are the leading entry vector for security breaches.",
+                citation: "[Source: Digital Production, Design & Development Core Textbook]"
+            },
+            {
+                id: 57,
+                topic: 'security',
+                category: 'Security',
+                tagClass: 'tag-security',
+                question: "Provide an internal mitigation example regarding server room physical placement.",
+                answer: "Positioning master hardware centers strictly away from building zones containing fire hazards or flammable materials to mitigate baseline catastrophic threats.",
+                citation: "[Source: Digital Production, Design & Development Core Textbook]"
+            },
+            {
+                id: 58,
+                topic: 'security',
+                category: 'Security',
+                tagClass: 'tag-security',
+                question: "What are the two primary classifications of data access control?",
+                answer: "Software-based logical controls (e.g., system rules, access rights) and physical site controls (e.g., locks, physical badges, alarm panels).",
+                citation: "[Source: Digital Production, Design & Development Core Textbook]"
+            },
+            {
+                id: 59,
+                topic: 'security',
+                category: 'Security',
+                tagClass: 'tag-security',
+                question: "What is asymmetric encryption?",
+                answer: "A cryptographic algorithm approach that relies on mathematically complementary key pairs consisting of a public key for encoding and a private key for decoding.",
+                citation: "[Source: Digital Production, Design & Development Core Textbook]"
+            },
+            {
+                id: 60,
+                topic: 'security',
+                category: 'Security',
+                tagClass: 'tag-security',
+                question: "What is network air gapping?",
+                answer: "A physical defense layout ensuring that a secure, sensitive localized network is physically separated and entirely disconnected from public or unsecure open internet networks.",
+                citation: "[Source: Digital Production, Design & Development Core Textbook]"
+            },
+            {
+                id: 61,
+                topic: 'security',
+                category: 'Security',
+                tagClass: 'tag-security',
+                question: "What three core tenets form the framework of the CIA triad?",
+                answer: "Confidentiality, Integrity, and Availability.",
+                citation: "[Source: Digital Software Development Technical Specification]"
+            },
+            {
+                id: 62,
+                topic: 'security',
+                category: 'Security',
+                tagClass: 'tag-security',
+                question: "What is the primary operational objective of Disaster Recovery Planning?",
+                answer: "Establishing explicit technical procedures and alternative hardware setups to restore core operational capability and recover critical datasets after a major security failure.",
+                citation: "[Source: Digital Software Development Technical Specification]"
+            },
+            {
+                id: 63,
+                topic: 'security',
+                category: 'Security',
+                tagClass: 'tag-security',
+                question: "Give an example of a human error that triggers an organization-wide data breach.",
+                answer: "Falling victim to a social engineering scheme (like baiting) or accidentally applying overly permissive security rules to public-facing data tables.",
+                citation: "[Source: Digital Production, Design & Development Core Textbook]"
+            },
+            {
+                id: 64,
+                topic: 'security',
+                category: 'Security',
+                tagClass: 'tag-security',
+                question: "Why must internal sales numbers or private trade secrets be prioritized by cyber security policies?",
+                answer: "Leaks can destroy an organization's competitive edge and lead to significant financial loss, heavily depressing investor dividends or shareholder trust.",
+                citation: "[Source: Digital Production, Design & Development Core Textbook]"
+            }
+        ];
+
+        function displayCards(filterTopicId) {
+            const gridContainer = document.getElementById('grid');
+            gridContainer.innerHTML = '';
+
+            const filteredData = filterTopicId === 'all' 
+                ? flashcardsData 
+                : flashcardsData.filter(item => item.topic === filterTopicId);
+
+            filteredData.forEach(data => {
+                const cardElement = document.createElement('div');
+                cardElement.className = 'flashcard';
+                
+                cardElement.innerHTML = `
+                    <div class="card-inner">
+                        <div class="card-front">
+                            <span class="category-tag ${data.tagClass}">${data.category}</span>
+                            <p class="card-question">${data.question}</p>
+                            <span class="hint-text">🔄 Click to Reveal Answer</span>
+                        </div>
+                        <div class="card-back">
+                            <span class="category-tag" style="background-color: #64748b;">Answer Definition</span>
+                            <p class="card-answer">${data.answer}</p>
+                            <span class="citation">${data.citation}</span>
+                            <span class="hint-text" style="margin-top: 5px;">🔄 Click to Return</span>
+                        </div>
+                    </div>
+                `;
+
+                cardElement.addEventListener('click', () => {
+                    const inner = cardElement.querySelector('.card-inner');
+                    inner.classList.toggle('flipped');
+                });
+
+                gridContainer.appendChild(cardElement);
+            });
+        }
+
+        function filterTopic(topicId) {
+            const buttons = document.querySelectorAll('.nav-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            
+            // Highlight matching button
+            const targetBtn = Array.from(buttons).find(btn => btn.getAttribute('onclick').includes(`'${topicId}'`));
+            if (targetBtn) targetBtn.classList.add('active');
+
+            displayCards(topicId);
+        }
+
+        // Initialize display with all cards
+        window.onload = () => {
+            displayCards('all');
+        };
+    </script>
+</body>
+</html>
